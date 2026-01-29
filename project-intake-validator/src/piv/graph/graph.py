@@ -6,7 +6,9 @@ from ..io.excel_reader import read_workbook_text
 from ..preprocessing.semantic_extractor import extract_sections_via_llm
 from ..agents.header_agent import validate_header
 from ..agents.business_case_agent import validate_business_case
+from ..agents.problem_agent import validate_problem
 from ..agents.scope_agent import validate_scope
+from ..agents.expected_benefits_agent import validate_expected_benefits
 from ..report import format_feedback
 
 def build_graph(context):
@@ -46,11 +48,25 @@ def build_graph(context):
         state["validation"]["business_case"] = res
         return state
 
+    def node_problem(state):
+        res = validate_problem(state["sections"].get("problem_statement", {}))
+        if "validation" not in state:
+            state["validation"] = {}
+        state["validation"]["problem_statement"] = res
+        return state
+
     def node_scope(state):
         res = validate_scope(state["sections"].get("project_scope", {}))
         if "validation" not in state:
             state["validation"] = {}
         state["validation"]["project_scope"] = res
+        return state
+
+    def node_benefits(state):
+        res = validate_expected_benefits(state["sections"].get("expected_benefits", {}))
+        if "validation" not in state:
+            state["validation"] = {}
+        state["validation"]["expected_benefits"] = res
         return state
 
     def node_format(state):
@@ -62,7 +78,9 @@ def build_graph(context):
     g.add_node("extract", node_extract)
     g.add_node("header", node_header)
     g.add_node("business", node_business)
+    g.add_node("problem", node_problem)
     g.add_node("scope", node_scope)
+    g.add_node("benefits", node_benefits)
     g.add_node("format", node_format)
 
     g.set_entry_point("read")
@@ -70,8 +88,10 @@ def build_graph(context):
     # Make validation nodes sequential instead of parallel
     g.add_edge("extract", "header")
     g.add_edge("header", "business")
-    g.add_edge("business", "scope")
-    g.add_edge("scope", "format")
+    g.add_edge("business", "problem")
+    g.add_edge("problem", "scope")
+    g.add_edge("scope", "benefits")
+    g.add_edge("benefits", "format")
     g.add_edge("format", END)
 
     return g.compile()
