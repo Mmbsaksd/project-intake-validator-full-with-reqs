@@ -10,12 +10,14 @@ def create_sample_excel(output_path):
     # Benefits: Qualitative, Quantitative (Tech HW, Custom HW, SW, Custom SW)
     
     data = [
+        ["Fixing of FMS2134 job failure", "", ""], # Title for fallback testing
+        ["", "", ""],
         ["Section", "Field", "Value"],
         ["HEADER", "Practice/Account", "Digital Transformation / AI Lab"],
-        ["HEADER", "Project Name", "Intake Validator Pilot"],
+        ["HEADER", "Project Name", ""], # Empty to test fallback to title
         ["HEADER", "Ticket Hyperlink", "BP-00479"],
-        ["HEADER", "Date", "2026-01-31"],
-        ["HEADER", "Deadline", "2026-03-15"],
+        ["HEADER", "Start Date", "15-Jul-25"],
+        ["HEADER", "Deadline", "30-Sep-25"],
         
         ["BUSINESS_CASE", "Why now", "The current manual process is slow and error-prone."],
         ["BUSINESS_CASE", "Consequences of delay", "Increased turnaround time and potential data entry errors."],
@@ -45,8 +47,8 @@ def create_sample_excel(output_path):
     for r_idx, row in enumerate(data, 1):
         for c_idx, val in enumerate(row, 1):
             cell = ws.cell(row=r_idx, column=c_idx, value=val)
-            # Add hyperlink to the Ticket Hyperlink value (row 4, col 3 assuming column 1 is Section, 2 is Field, 3 is Value)
-            if r_idx == 4 and c_idx == 3:
+            # Add hyperlink to the Ticket Hyperlink value (row 7, col 3 assuming column 1 is Section, 2 is Field, 3 is Value)
+            if r_idx == 7 and c_idx == 3:
                 cell.hyperlink = "https://jira.example.com/browse/BP-00479"
                 cell.font = openpyxl.styles.Font(color="0000FF", underline="single")
 

@@ -22,7 +22,7 @@ def format_feedback(validation):
         "Practice/Account": hdr_ok("Practice/Account"),
         "Project Name": hdr_ok("Project Name"),
         "Ticket Hyperlink": hdr_ok("Ticket Hyperlink"),
-        "Date": hdr_ok("Date"),
+        "Start Date": hdr_ok("Start Date"),
         "Deadline": hdr_ok("Deadline"),
     }
 
@@ -87,7 +87,7 @@ def format_feedback(validation):
     lines.append(f"Practice/Account: {'✅' if header_checks['Practice/Account'] else '❌'}")
     lines.append(f"Project Name: {'✅' if header_checks['Project Name'] else '❌'}")
     lines.append(f"Ticket Hyperlink: {'✅' if header_checks['Ticket Hyperlink'] else '❌'}")
-    lines.append(f"Date: {'✅' if header_checks['Date'] else '❌'}")
+    lines.append(f"Start Date: {'✅' if header_checks['Start Date'] else '❌'}")
     lines.append(f"Deadline: {'✅' if header_checks['Deadline'] else '❌'}\n")
 
     lines.append("BUSINESS CASE:")
@@ -114,7 +114,7 @@ def format_feedback(validation):
     lines.append(f"Customer Soft Dollars: {'✅' if quant_ok['Customer Soft Dollars'] else '❌'}\n")
 
     overall_ok = all([
-        header_checks['Practice/Account'], header_checks['Project Name'], header_checks['Ticket Hyperlink'], header_checks['Date'], header_checks['Deadline'],
+        header_checks['Practice/Account'], header_checks['Project Name'], header_checks['Ticket Hyperlink'], header_checks['Start Date'], header_checks['Deadline'],
         business_checks['Why now'], business_checks['Consequences of delay'], business_checks['Technical justification'], business_checks['Softtek Big Y'], business_checks['KPI alignment'],
         problem_clarity, problem_completeness, in_scope_ok, out_scope_ok, qual_ok, all(quant_ok.values())
     ])

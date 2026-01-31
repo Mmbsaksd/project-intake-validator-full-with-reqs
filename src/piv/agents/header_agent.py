@@ -1,24 +1,31 @@
-
 from ..agents.base import ValidationResult, ValidationIssue
 from datetime import datetime
-
+from dateutil import parser
 
 def _is_valid_date(s: str):
     if not s or not isinstance(s, str):
         return False
     s = s.strip()
-    formats = ["%Y-%m-%d", "%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M:%S", "%d/%m/%Y", "%d-%m-%Y", "%m/%d/%Y"]
+    # Try common formats first, then fallback to dateutil
+    formats = [
+        "%Y-%m-%d", "%Y-%m-%d %H:%M:%S", "%d/%m/%Y", "%d-%m-%Y", "%m/%d/%Y",
+        "%d-%b-%y", "%d-%b-%Y", "%b-%d-%y"
+    ]
     for fmt in formats:
         try:
             datetime.strptime(s, fmt)
             return True
         except Exception:
             continue
-    return False
+    
+    try:
+        parser.parse(s)
+        return True
+    except Exception:
+        return False
 
 
 def validate_header(section):
-    # Defensive: handle if section is string or not a dict
     if not isinstance(section, dict):
         section = {}
     f = section.get("fields", {}) or {}
@@ -34,13 +41,12 @@ def validate_header(section):
     if not ticket:
         issues.append(ValidationIssue(field="Ticket Hyperlink", severity="ERROR", description="Missing ticket hyperlink"))
     else:
-        # Check if it's a URL or contains a URL in parentheses (from excel_reader)
         if not (ticket.startswith("http://") or ticket.startswith("https://") or ("(http" in ticket)):
             issues.append(ValidationIssue(field="Ticket Hyperlink", severity="ERROR", description="Ticket hyperlink not a clickable URL or missing embedded link"))
 
-    date_val = (f.get("Date") or "").strip()
-    if not date_val or not _is_valid_date(date_val):
-        issues.append(ValidationIssue(field="Date", severity="ERROR", description="Missing or invalid date"))
+    start_date = (f.get("Start Date") or "").strip()
+    if not start_date or not _is_valid_date(start_date):
+        issues.append(ValidationIssue(field="Start Date", severity="ERROR", description="Missing or invalid start date"))
 
     deadline = (f.get("Deadline") or "").strip()
     if not deadline or not _is_valid_date(deadline):
