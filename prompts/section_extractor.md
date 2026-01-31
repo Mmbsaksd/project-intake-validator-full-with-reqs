@@ -19,6 +19,7 @@ Return ONLY valid JSON following this exact schema. All keys must be present; if
       "Why now": "",
       "Consequences of delay": "",
       "Technical justification": "",
+      "Softtek Big Y": "",
       "Organizational KPI": ""
     }
   },
@@ -43,10 +44,10 @@ Return ONLY valid JSON following this exact schema. All keys must be present; if
     "fields": {
       "Qualitative Benefits": "",
       "Quantitative": {
-        "Tech Hardware": "",
-        "Custom Hardware": "",
-        "Software": "",
-        "Custom Software": ""
+        "Softtek Hard Dollars": "",
+        "Softtek Soft Dollars": "",
+        "Customer Hard Dollars": "",
+        "Customer Soft Dollars": ""
       }
     }
   }

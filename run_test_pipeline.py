@@ -4,17 +4,21 @@ from pathlib import Path
 sys.path.insert(0, str(Path.cwd()))
 from dotenv import load_dotenv
 load_dotenv()
+import sys
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8')
 from src.piv.llm.azure_openai_client import AzureOpenAILLM
 from src.piv.graph.graph import build_graph
 
 print('Initializing LLM...')
 llm = AzureOpenAILLM()
 print('Building graph...')
-context = {'llm': llm, 'prompts_dir': 'prompts'}
+PROMPTS_DIR = Path(__file__).parent / 'prompts'
+context = {'llm': llm, 'prompts_dir': str(PROMPTS_DIR)}
 graph = build_graph(context)
 print('Graph built')
 
-excel_path = Path(r'C:\Users\mohammed.a\Desktop\sample_test.xlsx')
+excel_path = Path(__file__).parent / 'tests' / 'sample_intake.xlsx'
 if not excel_path.exists():
     print('Sample file missing:', excel_path)
     sys.exit(1)

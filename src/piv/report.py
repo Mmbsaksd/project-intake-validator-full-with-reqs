@@ -32,6 +32,7 @@ def format_feedback(validation):
         "Why now": False,
         "Consequences of delay": False,
         "Technical justification": False,
+        "Softtek Big Y": False,
         "KPI alignment": False,
     }
     if bc:
@@ -66,7 +67,12 @@ def format_feedback(validation):
     # EXPECTED BENEFITS
     eb = validation.get("expected_benefits")
     qual_ok = False
-    quant_ok = {"Tech Hardware": False, "Custom Hardware": False, "Software": False, "Custom Software": False}
+    quant_ok = {
+        "Softtek Hard Dollars": False, 
+        "Softtek Soft Dollars": False, 
+        "Customer Hard Dollars": False, 
+        "Customer Soft Dollars": False
+    }
     if eb:
         if not any(i.field == "Qualitative Benefits" and i.severity == "ERROR" for i in eb.issues):
             qual_ok = True
@@ -88,6 +94,7 @@ def format_feedback(validation):
     lines.append(f"Why now: {'✅' if business_checks['Why now'] else '❌'}")
     lines.append(f"Consequences of delay: {'✅' if business_checks['Consequences of delay'] else '❌'}")
     lines.append(f"Technical justification: {'✅' if business_checks['Technical justification'] else '❌'}")
+    lines.append(f"Softtek Big Y: {'✅' if business_checks['Softtek Big Y'] else '❌'}")
     lines.append(f"KPI alignment: {'✅' if business_checks['KPI alignment'] else '❌'}\n")
 
     lines.append("PROBLEM STATEMENT:")
@@ -101,14 +108,14 @@ def format_feedback(validation):
     lines.append("EXPECTED BENEFITS:")
     lines.append(f"Qualitative benefits: {'✅' if qual_ok else '❌'}")
     lines.append("Quantitative benefits:")
-    lines.append(f"Tech Hardware: {'✅' if quant_ok['Tech Hardware'] else '❌'}")
-    lines.append(f"Custom Hardware: {'✅' if quant_ok['Custom Hardware'] else '❌'}")
-    lines.append(f"Software: {'✅' if quant_ok['Software'] else '❌'}")
-    lines.append(f"Custom Software: {'✅' if quant_ok['Custom Software'] else '❌'}\n")
+    lines.append(f"Softtek Hard Dollars: {'✅' if quant_ok['Softtek Hard Dollars'] else '❌'}")
+    lines.append(f"Softtek Soft Dollars: {'✅' if quant_ok['Softtek Soft Dollars'] else '❌'}")
+    lines.append(f"Customer Hard Dollars: {'✅' if quant_ok['Customer Hard Dollars'] else '❌'}")
+    lines.append(f"Customer Soft Dollars: {'✅' if quant_ok['Customer Soft Dollars'] else '❌'}\n")
 
     overall_ok = all([
         header_checks['Practice/Account'], header_checks['Project Name'], header_checks['Ticket Hyperlink'], header_checks['Date'], header_checks['Deadline'],
-        business_checks['Why now'], business_checks['Consequences of delay'], business_checks['Technical justification'], business_checks['KPI alignment'],
+        business_checks['Why now'], business_checks['Consequences of delay'], business_checks['Technical justification'], business_checks['Softtek Big Y'], business_checks['KPI alignment'],
         problem_clarity, problem_completeness, in_scope_ok, out_scope_ok, qual_ok, all(quant_ok.values())
     ])
 

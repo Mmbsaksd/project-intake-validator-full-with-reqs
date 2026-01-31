@@ -49,6 +49,10 @@ def validate_business_case(section):
         if not _contains_keyword(tech, KEYWORDS_TECH):
             issues.append(ValidationIssue(field="Technical justification", severity="WARNING", description="Technical justification lacks technical details"))
 
+    bigy = (f.get("Softtek Big Y") or "").strip()
+    if not bigy:
+        issues.append(ValidationIssue(field="Softtek Big Y", severity="ERROR", description="Missing Softtek Big Y"))
+
     kpi = (f.get("Organizational KPI") or "").strip()
     if not kpi:
         issues.append(ValidationIssue(field="Organizational KPI", severity="ERROR", description="Missing KPI alignment"))

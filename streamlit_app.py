@@ -26,7 +26,8 @@ except Exception as e:
     st.stop()
 
 # Build graph
-context = {"llm": llm, "prompts_dir": "prompts"}
+PROMPTS_DIR = Path(__file__).parent / "prompts"
+context = {"llm": llm, "prompts_dir": str(PROMPTS_DIR)}
 graph = build_graph(context)
 
 uploaded_file = st.file_uploader("Upload Excel Intake File (.xlsx)", type=["xlsx"])

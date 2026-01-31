@@ -34,8 +34,9 @@ def validate_header(section):
     if not ticket:
         issues.append(ValidationIssue(field="Ticket Hyperlink", severity="ERROR", description="Missing ticket hyperlink"))
     else:
-        if not (ticket.startswith("http://") or ticket.startswith("https://")):
-            issues.append(ValidationIssue(field="Ticket Hyperlink", severity="ERROR", description="Ticket hyperlink not a clickable URL"))
+        # Check if it's a URL or contains a URL in parentheses (from excel_reader)
+        if not (ticket.startswith("http://") or ticket.startswith("https://") or ("(http" in ticket)):
+            issues.append(ValidationIssue(field="Ticket Hyperlink", severity="ERROR", description="Ticket hyperlink not a clickable URL or missing embedded link"))
 
     date_val = (f.get("Date") or "").strip()
     if not date_val or not _is_valid_date(date_val):

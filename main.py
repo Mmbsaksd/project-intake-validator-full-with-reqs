@@ -9,10 +9,15 @@ from dotenv import load_dotenv
 from src.piv.graph.graph import build_graph
 from src.piv.llm.azure_openai_client import AzureOpenAILLM
 
-def run_pipeline(xlsx_path: str, prompts_dir: str = "prompts"):
+def run_pipeline(xlsx_path: str, prompts_dir: str = None):
+    if prompts_dir is None:
+        prompts_dir = Path(__file__).parent / "prompts"
+    else:
+        prompts_dir = Path(prompts_dir).resolve()
+    
     load_dotenv()
     llm = AzureOpenAILLM()
-    context = {"llm": llm, "prompts_dir": prompts_dir}
+    context = {"llm": llm, "prompts_dir": str(prompts_dir)}
     graph = build_graph(context)
     initial = {
         "source_path": str(Path(xlsx_path).resolve()),
@@ -29,6 +34,6 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Project Intake Validator (Azure OpenAI)")
     parser.add_argument("xlsx_path")
-    parser.add_argument("--prompts_dir", default="prompts")
+    parser.add_argument("--prompts_dir", default=None)
     args = parser.parse_args()
     run_pipeline(args.xlsx_path, args.prompts_dir)

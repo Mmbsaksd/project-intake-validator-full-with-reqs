@@ -17,7 +17,7 @@ def validate_expected_benefits(section):
     if not isinstance(quant, dict):
         quant = {}
 
-    for k in ["Tech Hardware", "Custom Hardware", "Software", "Custom Software"]:
+    for k in ["Softtek Hard Dollars", "Softtek Soft Dollars", "Customer Hard Dollars", "Customer Soft Dollars"]:
         v = (quant.get(k) or "") if quant else ""
         if not v or not str(v).strip():
             issues.append(ValidationIssue(field=f"Quantitative:{k}", severity="ERROR", description=f"Missing {k}"))
