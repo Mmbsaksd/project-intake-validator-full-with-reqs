@@ -1,3 +1,14 @@
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+from logger import CustomLogger
+from exception import ValidationException
+
+# Initialize logger
+_logger_instance = CustomLogger()
+logger = _logger_instance.get_logger(__name__)
+
 
 def format_feedback(validation):
     """Produce a strict ADSP Validation Summary matching the user's required format.
@@ -80,46 +91,50 @@ def format_feedback(validation):
             if not any(i.field == f"Quantitative:{k}" and i.severity == "ERROR" for i in eb.issues):
                 quant_ok[k] = True
 
-    # Build the exact output format
-    lines = []
-    lines.append("ADSP Validation Summary\n")
-    lines.append("HEADER:")
-    lines.append(f"Practice/Account: {'✅' if header_checks['Practice/Account'] else '❌'}")
-    lines.append(f"Project Name: {'✅' if header_checks['Project Name'] else '❌'}")
-    lines.append(f"Ticket Hyperlink: {'✅' if header_checks['Ticket Hyperlink'] else '❌'}")
-    lines.append(f"Start Date: {'✅' if header_checks['Start Date'] else '❌'}")
-    lines.append(f"Deadline: {'✅' if header_checks['Deadline'] else '❌'}\n")
+    try:
+        # Build the exact output format
+        lines = []
+        lines.append("ADSP Validation Summary\n")
+        lines.append("HEADER:")
+        lines.append(f"Practice/Account: {'✅' if header_checks['Practice/Account'] else '❌'}")
+        lines.append(f"Project Name: {'✅' if header_checks['Project Name'] else '❌'}")
+        lines.append(f"Ticket Hyperlink: {'✅' if header_checks['Ticket Hyperlink'] else '❌'}")
+        lines.append(f"Start Date: {'✅' if header_checks['Start Date'] else '❌'}")
+        lines.append(f"Deadline: {'✅' if header_checks['Deadline'] else '❌'}\n")
 
-    lines.append("BUSINESS CASE:")
-    lines.append(f"Why now: {'✅' if business_checks['Why now'] else '❌'}")
-    lines.append(f"Consequences of delay: {'✅' if business_checks['Consequences of delay'] else '❌'}")
-    lines.append(f"Technical justification: {'✅' if business_checks['Technical justification'] else '❌'}")
-    lines.append(f"Softtek Big Y: {'✅' if business_checks['Softtek Big Y'] else '❌'}")
-    lines.append(f"KPI alignment: {'✅' if business_checks['KPI alignment'] else '❌'}\n")
+        lines.append("BUSINESS CASE:")
+        lines.append(f"Why now: {'✅' if business_checks['Why now'] else '❌'}")
+        lines.append(f"Consequences of delay: {'✅' if business_checks['Consequences of delay'] else '❌'}")
+        lines.append(f"Technical justification: {'✅' if business_checks['Technical justification'] else '❌'}")
+        lines.append(f"Softtek Big Y: {'✅' if business_checks['Softtek Big Y'] else '❌'}")
+        lines.append(f"KPI alignment: {'✅' if business_checks['KPI alignment'] else '❌'}\n")
 
-    lines.append("PROBLEM STATEMENT:")
-    lines.append(f"Clarity: {'✅' if problem_clarity else '❌'}")
-    lines.append(f"Completeness: {'✅' if problem_completeness else '❌'}\n")
+        lines.append("PROBLEM STATEMENT:")
+        lines.append(f"Clarity: {'✅' if problem_clarity else '❌'}")
+        lines.append(f"Completeness: {'✅' if problem_completeness else '❌'}\n")
 
-    lines.append("PROJECT SCOPE:")
-    lines.append(f"In Scope: {'✅' if in_scope_ok else '❌'}")
-    lines.append(f"Out of Scope: {'✅' if out_scope_ok else '❌'}\n")
+        lines.append("PROJECT SCOPE:")
+        lines.append(f"In Scope: {'✅' if in_scope_ok else '❌'}")
+        lines.append(f"Out of Scope: {'✅' if out_scope_ok else '❌'}\n")
 
-    lines.append("EXPECTED BENEFITS:")
-    lines.append(f"Qualitative benefits: {'✅' if qual_ok else '❌'}")
-    lines.append("Quantitative benefits:")
-    lines.append(f"Softtek Hard Dollars: {'✅' if quant_ok['Softtek Hard Dollars'] else '❌'}")
-    lines.append(f"Softtek Soft Dollars: {'✅' if quant_ok['Softtek Soft Dollars'] else '❌'}")
-    lines.append(f"Customer Hard Dollars: {'✅' if quant_ok['Customer Hard Dollars'] else '❌'}")
-    lines.append(f"Customer Soft Dollars: {'✅' if quant_ok['Customer Soft Dollars'] else '❌'}\n")
+        lines.append("EXPECTED BENEFITS:")
+        lines.append(f"Qualitative benefits: {'✅' if qual_ok else '❌'}")
+        lines.append("Quantitative benefits:")
+        lines.append(f"Softtek Hard Dollars: {'✅' if quant_ok['Softtek Hard Dollars'] else '❌'}")
+        lines.append(f"Softtek Soft Dollars: {'✅' if quant_ok['Softtek Soft Dollars'] else '❌'}")
+        lines.append(f"Customer Hard Dollars: {'✅' if quant_ok['Customer Hard Dollars'] else '❌'}")
+        lines.append(f"Customer Soft Dollars: {'✅' if quant_ok['Customer Soft Dollars'] else '❌'}\n")
 
-    overall_ok = all([
-        header_checks['Practice/Account'], header_checks['Project Name'], header_checks['Ticket Hyperlink'], header_checks['Start Date'], header_checks['Deadline'],
-        business_checks['Why now'], business_checks['Consequences of delay'], business_checks['Technical justification'], business_checks['Softtek Big Y'], business_checks['KPI alignment'],
-        problem_clarity, problem_completeness, in_scope_ok, out_scope_ok, qual_ok, all(quant_ok.values())
-    ])
+        overall_ok = all([
+            header_checks['Practice/Account'], header_checks['Project Name'], header_checks['Ticket Hyperlink'], header_checks['Start Date'], header_checks['Deadline'],
+            business_checks['Why now'], business_checks['Consequences of delay'], business_checks['Technical justification'], business_checks['Softtek Big Y'], business_checks['KPI alignment'],
+            problem_clarity, problem_completeness, in_scope_ok, out_scope_ok, qual_ok, all(quant_ok.values())
+        ])
 
-    lines.append("OVERALL STATUS:\n")
-    lines.append("READY FOR REVIEW" if overall_ok else "NEEDS REVISION")
+        lines.append("OVERALL STATUS:\n")
+        lines.append("READY FOR REVIEW" if overall_ok else "NEEDS REVISION")
 
-    return "\n".join(lines)
+        return "\n".join(lines)
+    except Exception as e:
+        logger.exception("Unhandled exception in format_feedback")
+        raise ValidationException("format_feedback failed", e) from e

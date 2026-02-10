@@ -1,6 +1,16 @@
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+
+from logger import CustomLogger
+from exception import ValidationException
 from ..agents.base import ValidationResult, ValidationIssue
 from datetime import datetime
 from dateutil import parser
+
+# Initialize logger
+_logger_instance = CustomLogger()
+logger = _logger_instance.get_logger(__name__)
 
 def _is_valid_date(s: str):
     if not s or not isinstance(s, str):
@@ -26,30 +36,34 @@ def _is_valid_date(s: str):
 
 
 def validate_header(section):
-    if not isinstance(section, dict):
-        section = {}
-    f = section.get("fields", {}) or {}
-    issues = []
+    try:
+        if not isinstance(section, dict):
+            section = {}
+        f = section.get("fields", {}) or {}
+        issues = []
 
-    if not (f.get("Practice/Account") or "").strip():
-        issues.append(ValidationIssue(field="Practice/Account", severity="ERROR", description="Missing Practice/Account"))
+        if not (f.get("Practice/Account") or "").strip():
+            issues.append(ValidationIssue(field="Practice/Account", severity="ERROR", description="Missing Practice/Account"))
 
-    if not (f.get("Project Name") or "").strip():
-        issues.append(ValidationIssue(field="Project Name", severity="ERROR", description="Missing Project Name"))
+        if not (f.get("Project Name") or "").strip():
+            issues.append(ValidationIssue(field="Project Name", severity="ERROR", description="Missing Project Name"))
 
-    ticket = (f.get("Ticket Hyperlink") or "").strip()
-    if not ticket:
-        issues.append(ValidationIssue(field="Ticket Hyperlink", severity="ERROR", description="Missing ticket hyperlink"))
-    else:
-        if not (ticket.startswith("http://") or ticket.startswith("https://") or ("(http" in ticket)):
-            issues.append(ValidationIssue(field="Ticket Hyperlink", severity="ERROR", description="Ticket hyperlink not a clickable URL or missing embedded link"))
+        ticket = (f.get("Ticket Hyperlink") or "").strip()
+        if not ticket:
+            issues.append(ValidationIssue(field="Ticket Hyperlink", severity="ERROR", description="Missing ticket hyperlink"))
+        else:
+            if not (ticket.startswith("http://") or ticket.startswith("https://") or ("(http" in ticket)):
+                issues.append(ValidationIssue(field="Ticket Hyperlink", severity="ERROR", description="Ticket hyperlink not a clickable URL or missing embedded link"))
 
-    start_date = (f.get("Start Date") or "").strip()
-    if not start_date or not _is_valid_date(start_date):
-        issues.append(ValidationIssue(field="Start Date", severity="ERROR", description="Missing or invalid start date"))
+        start_date = (f.get("Start Date") or "").strip()
+        if not start_date or not _is_valid_date(start_date):
+            issues.append(ValidationIssue(field="Start Date", severity="ERROR", description="Missing or invalid start date"))
 
-    deadline = (f.get("Deadline") or "").strip()
-    if not deadline or not _is_valid_date(deadline):
-        issues.append(ValidationIssue(field="Deadline", severity="ERROR", description="Missing or invalid deadline"))
+        deadline = (f.get("Deadline") or "").strip()
+        if not deadline or not _is_valid_date(deadline):
+            issues.append(ValidationIssue(field="Deadline", severity="ERROR", description="Missing or invalid deadline"))
 
-    return ValidationResult(passed=len(issues) == 0, issues=issues)
+        return ValidationResult(passed=len(issues) == 0, issues=issues)
+    except Exception as e:
+        logger.exception("Unhandled exception in validate_header")
+        raise ValidationException("validate_header failed", e) from e
